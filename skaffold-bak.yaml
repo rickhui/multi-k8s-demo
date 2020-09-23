@@ -1,0 +1,37 @@
+apiVersion: skaffold/v1beta2
+kind: Config
+build:
+  local:
+    push: false
+  artifacts:
+    - image: rickhuihk/multi-client
+      context: client
+      docker:
+        dockerfile: Dockerfile.dev
+      # Enable Mode#2 deployment
+      sync:
+        "**/*.js": .
+        "**/*.css": .
+        "**/*.html": .
+    - image: rickhuihk/multi-server
+      context: server
+      docker:
+        dockerfile: Dockerfile.dev
+      # Enable Mode#2 deployment
+      sync:
+        "**/*.js": .
+    - image: rickhuihk/multi-worker
+      context: worker
+      docker:
+        dockerfile: Dockerfile.dev
+      # Enable Mode#2 deployment
+      sync:
+        "**/*.js": .
+deploy:
+  kubectl:
+    manifests:
+      - k8s/client-deployment.yaml
+      - k8s/server-deployment.yaml
+      - k8s/worker-deployment.yaml
+      - k8s/client-cluster-ip-service.yaml
+      - k8s/server-cluster-ip-service.yaml
